@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Genius...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Global Styles & "Cool Modern" Theme --- */
+        :root {
+            --bg-color: #0a0a0a;
+            --surface-color: rgba(20, 20, 30, 0.85);
+            --accent-color: #ff6b6b;
+            --accent-glow: #ff9a9a;
+            --text-primary: #ffffff;
+            --text-secondary: #d1d1d1;
+            --heading-font: 'Playfair Display', serif;
+            --body-font: 'Poppins', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* --- Page & Content Styling --- */
+        .page {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .content-wrapper {
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            background: var(--surface-color);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(255, 107, 107, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 107, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* --- Special styling for intro page --- */
+        #page-intro .content-wrapper {
+            background: transparent;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+        }
+
+        h1, h2 {
+            font-family: var(--heading-font);
+            color: var(--text-primary);
+            font-weight: 700;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1 { 
+            font-size: 4rem; 
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        h1:hover::after {
+            transform: scaleX(1);
+        }
+        
+        h2 { 
+            font-size: 2.5rem; 
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            position: relative;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+        }
+
+        /* --- Buttons --- */
+        .next-btn {
+            background: linear-gradient(45deg, var(--accent-color), var(--accent-glow));
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--body-font);
+            margin: 5px;
+            box-shadow: 0 4px 15px 0 rgba(255, 107, 107, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .next-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+            z-index: -1;
+        }
+
+        .next-btn:hover::before {
+            transform: translateX(0);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px 0 rgba(255, 107, 107, 0.6);
+        }
+
+        .next-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* --- Polaroid Picture Style --- */
+        .polaroid {
+            background: white;
+            padding: 1rem 1rem 2.5rem 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transform: rotate(-2deg);
+            transition: all 0.3s ease;
+            max-width: 80%;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .polaroid::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .polaroid:hover::after {
+            transform: translateX(100%);
+        }
+
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(20%);
+            transition: filter 0.5s ease;
+        }
+
+        .polaroid:hover img {
+            filter: grayscale(0%);
+        }
+
+        /* --- Letter Page Style --- */
+        .letter-page {
+            text-align: left;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .letter-page h2 { text-align: center; }
+        .letter-page p { color: var(--text-primary); }
+        .letter-sticker {
+            position: absolute;
+            width: 120px;
+            height: auto;
+            bottom: 20px;
+            right: -15px;
+            transform: rotate(8deg);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            border: 4px solid white;
+            border-radius: 2px;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        .letter-sticker:hover {
+            transform: rotate(0deg) scale(1.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+
+        /* --- Typing Effect --- */
+        #letter-text-container {
+            min-height: 400px;
+        }
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background-color: var(--accent-color);
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink {
+            from, to { background-color: transparent; }
+            50% { background-color: var(--accent-color); }
+        }
+        
+        /* --- Wordle Game Styling --- */
+        #wordle-board {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 5px;
+            margin: 20px auto;
+            max-width: 330px;
+        }
+        .wordle-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+        }
+        .wordle-tile {
+            width: 45px;
+            height: 45px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            color: white;
+            background: var(--surface-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wordle-tile::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .wordle-tile:hover::after {
+            opacity: 1;
+        }
+
+        .wordle-tile.correct { 
+            background-color: #6aaa64; 
+            border-color: #6aaa64;
+            animation: flip 0.5s ease;
+        }
+        .wordle-tile.present { 
+            background-color: #c9b458; 
+            border-color: #c9b458;
+            animation: flip 0.5s ease;
+        }
+        .wordle-tile.absent { 
+            background-color: #787c7e; 
+            border-color: #787c7e;
+            animation: flip 0.5s ease;
+        }
+
+        @keyframes flip {
+            0% { transform: rotateX(0); }
+            50% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0); }
+        }
+
+        #message { 
+            min-height: 25px; 
+            font-weight: bold; 
+            color: var(--accent-glow);
+            margin-top: 10px;
+        }
+
+        /* --- Final "A Magical Grand Finale" Section --- */
+        #page-final .content-wrapper {
+            background: transparent;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            max-width: 100%;
+        }
+        #page-final h1 {
+            font-size: 5rem;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 5s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .slideshow-container {
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .slideshow-track {
+            display: flex;
+            animation: slide 60s linear infinite; 
+        }
+        .slideshow-img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            margin: 0 15px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        .slideshow-img:hover {
+            transform: scale(1.05);
+        }
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- Floating Hearts Animation --- */
+        .heart {
+            position: fixed;
+            color: var(--accent-color);
+            font-size: 20px;
+            opacity: 0.7;
+            animation: float-heart 6s linear;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @keyframes float-heart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 25px; }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            .wordle-tile { width: 40px; height: 40px; font-size: 1.5rem; }
+            .letter-sticker { width: 90px; right: -10px; }
+            #page-final h1 { font-size: 3.5rem; }
+            .slideshow-img { width: 250px; height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div id="particles-js"></div>
+
+    <!-- Page 1: The Intro -->
+    <section id="page-intro" class="page active">
+        <div class="content-wrapper">
+            <h1>Hey Genius.</h1>
+            <p>I made this little journey for you. I hope you like it.</p>
+            <button class="next-btn" data-next="page-beginning">LET'S START</button>
+        </div>
+    </section>
+
+    <!-- Page 2: The Beginning -->
+    <section id="page-beginning" class="page">
+        <div class="content-wrapper">
+            <h2>The Start of Our Journey</h2>
+            <p>We met at an incident... a SIH Hackathon team making. A day I'll always remember.</p>
+            <button class="next-btn" data-next="page-conflict">Next</button>
+        </div>
+    </section>
+
+    <!-- Page 3: The Conflict -->
+    <section id="page-conflict" class="page">
+        <div class="content-wrapper">
+            <h2>A Strange Twist</h2>
+            <p>You hated me from that day. And honestly, mujhe pta bhi nahi tha. But somehow, along the way, that feeling changed. It turned into something else... into you liking me. But how?</p>
+            <button class="next-btn" data-next="page-turning-point">Next</button>
+        </div>
+    </section>
+
+    <!-- Page 4: The Turning Point -->
+    <section id="page-turning-point" class="page">
+        <div class="content-wrapper">
+            <h2>The Shift</h2>
+            <p>We started talking... and chatting... and dancing. Ethinc night. That was the day I fell in love with you.</p>
+            <div class="polaroid">
+                <img src="https://z-cdn-media.chatglm.cn/files/f1b13c23-36c2-4639-b77b-cc7ab5c96a2e.png?auth_key=1864940182-e0fcd9bf31c541d88a5aba9802679bed-0-d8960dc6dda9f733ee06a276227361d5" alt="A picture of us at a special moment.">
+            </div>
+            <button class="next-btn" data-next="page-game">Next</button>
+        </div>
+    </section>
+
+    <!-- Page 5: The Game -->
+    <section id="page-game" class="page">
+        <div class="content-wrapper">
+            <h2>Wait! Play a Game First.</h2>
+            <p> Wordle. Use your keyboard to guess the word.</p>
+            <div id="wordle-board"></div>
+            <div id="message"></div>
+            <button class="next-btn" id="game-next-btn" data-next="page-letter" style="display: none;">Next</button>
+        </div>
+    </section>
+    
+    <!-- Page 6: The Final Letter -->
+    <section id="page-letter" class="page">
+        <div class="content-wrapper letter-page">
+            <h2>And Finally, This Letter For You...</h2>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p>Listen to this while you read:</p>
+                <!-- --- FIXED SONG: Replaced with YouTube Embed --- -->
+                <iframe width="100%" height="152" src="https://www.youtube.com/watch?v=2Vv-BfVoq4g&list=RD2Vv-BfVoq4g&start_radio=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <div id="letter-text-container">
+                <!-- The letter text will be dynamically inserted here by JavaScript -->
+            </div>
+            
+            <img src="https://z-cdn-media.chatglm.cn/files/f1b13c23-36c2-4639-b77b-cc7ab5c96a2e.png?auth_key=1864940182-e0fcd9bf31c541d88a5aba9802679bed-0-d8960dc6dda9f733ee06a276227361d5" alt="A picture of us" class="letter-sticker">
+            <button class="next-btn" id="letter-next-btn" data-next="page-final" style="display: none; margin-top: 130px;">To the Finale</button>
+        </div>
+    </section>
+
+    <!-- Page 7: The Final "A Magical Grand Finale" Section -->
+    <section id="page-final" class="page">
+        <div class="content-wrapper">
+            <h1>A Magical Grand Finale</h1>
+            <div class="slideshow-container">
+                <div class="slideshow-track">
+                    <img src="https://z-cdn-media.chatglm.cn/files/f1b13c23-36c2-4639-b77b-cc7ab5c96a2e.png?auth_key=1864940182-e0fcd9bf31c541d88a5aba9802679bed-0-d8960dc6dda9f733ee06a276227361d5" alt="Memory 1" class="slideshow-img">
+                    <img src="https://z-cdn-media.chatglm.cn/files/4c1a2c6a-5875-433f-9e1e-1e6f7e8c6d2f.png?auth_key=1864940182-3e7b0c1a0c5a4f2b8d9c1e1f1e6f7e8c6d2f" alt="Memory 2" class="slideshow-img">
+                    <img src="https://z-cdn-media.chatglm.cn/files/8e3f7d8b-6c8a-4e1b-9f2c-2d7a9b0c3e4d.png?auth_key=1864940182-4f8c9d2a1d6b3e9c2f1e1d6b3e9c2f1e" alt="Memory 3" class="slideshow-img">
+                    <img src="https://z-cdn-media.chatglm.cn/files/1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d.png?auth_key=1864940182-5g9d0e3b2f7c4a0d3e2f7c4a0d3e2f7c" alt="Memory 4" class="slideshow-img">
+                    <!-- Duplicate for seamless loop -->
+                    <img src="https://z-cdn-media.chatglm.cn/files/f1b13c23-36c2-4639-b77b-cc7ab5c96a2e.png?auth_key=1864940182-e0fcd9bf31c541d88a2aba9802679bed-0-d8960dc6dda9f733ee06a276227361d5" alt="Memory 1" class="slideshow-img">
+                    <img src="https://z-cdn-media.chatglm.cn/files/4c1a2c6a-5875-433f-9e1e-1e6f7e8c6d2f.png?auth_key=1864940182-3e7b0c1a0c5a4f2b8d9c1e1f1e6f7e8c6d2f" alt="Memory 2" class="slideshow-img">
+                    <img src="https://z-cdn-media.chatglm.cn/files/8e3f7d8b-6c8a-4e1b-9f2c-2d7a9b0c3e4d.png?auth_key=1864940182-4f8c9d2a1d6b3e9c2f1e1d6b3e9c2f1e" alt="Memory 3" class="slideshow-img">
+                    <img src="https://z-cdn-media.chatglm.cn/files/1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d.png?auth_key=1864940182-5g9d0e3b2f7c4a0d3e2f7c4a0d3e2f7c" alt="Memory 4" class="slideshow-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Create animated particles ---
+            const particlesContainer = document.getElementById('particles-js');
+            for (let i = 0; i < 30; i++) { // Reduced number of particles
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+
+            // --- Create floating hearts ---
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (5 + Math.random() * 3) + 's';
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 8000);
+            }
+            
+            // Create hearts periodically
+            setInterval(createHeart, 5000); // Reduced frequency
+
+            // --- Page Navigation Logic ---
+            const nextButtons = document.querySelectorAll('.next-btn');
+            const pages = document.querySelectorAll('.page');
+
+            function showPage(pageId) {
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    page.scrollTop = 0;
+                });
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    setTimeout(() => targetPage.classList.add('active'), 100);
+                }
+            }
+
+            nextButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const nextPageId = button.getAttribute('data-next');
+                    if (nextPageId) showPage(nextPageId);
+                });
+            });
+
+            // --- Wordle Game Logic ---
+            const targetWord = 'GENIUS';
+            const maxGuesses = 6;
+            let currentGuess = '';
+            let currentRow = 0;
+            let gameOver = false;
+
+            const board = document.getElementById('wordle-board');
+            const message = document.getElementById('message');
+            const gameNextBtn = document.getElementById('game-next-btn');
+
+            for (let i = 0; i < maxGuesses; i++) {
+                const row = document.createElement('div');
+                row.classList.add('wordle-row');
+                row.id = `row-${i}`;
+                for (let j = 0; j < targetWord.length; j++) {
+                    const tile = document.createElement('div');
+                    tile.classList.add('wordle-tile');
+                    tile.id = `tile-${i}-${j}`;
+                    row.appendChild(tile);
+                }
+                board.appendChild(row);
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (gameOver) return;
+                if (e.key === 'Enter') {
+                    checkGuess();
+                } else if (e.key === 'Backspace') {
+                    currentGuess = currentGuess.slice(0, -1);
+                    updateRowDisplay();
+                } else if (/^[a-zA-Z]$/.test(e.key)) {
+                    if (currentGuess.length < targetWord.length) {
+                        currentGuess += e.key.toUpperCase();
+                        updateRowDisplay();
+                    }
+                }
+            });
+
+            function updateRowDisplay() {
+                for (let i = 0; i < targetWord.length; i++) {
+                    document.getElementById(`tile-${currentRow}-${i}`).textContent = currentGuess[i] || '';
+                }
+            }
+
+            function checkGuess() {
+                if (currentGuess.length !== targetWord.length) {
+                    message.textContent = 'Not enough letters.';
+                    return;
+                }
+
+                const guess = currentGuess;
+                const targetLetters = targetWord.split('');
+                const guessLetters = guess.split('');
+                const result = new Array(targetWord.length).fill('absent');
+
+                for (let i = 0; i < targetWord.length; i++) {
+                    if (guessLetters[i] === targetLetters[i]) {
+                        result[i] = 'correct';
+                        targetLetters[i] = null;
+                    }
+                }
+                for (let i = 0; i < targetWord.length; i++) {
+                    if (result[i] === 'absent' && targetLetters.includes(guessLetters[i])) {
+                        result[i] = 'present';
+                        targetLetters[targetLetters.indexOf(guessLetters[i])] = null;
+                    }
+                }
+
+                for (let i = 0; i < targetWord.length; i++) {
+                    const tile = document.getElementById(`tile-${currentRow}-${i}`);
+                    tile.textContent = guessLetters[i];
+                    setTimeout(() => tile.classList.add(result[i]), i * 100);
+                }
+
+                if (guess === targetWord) {
+                    message.textContent = 'Amazing! You got it!';
+                    gameOver = true;
+                    gameNextBtn.style.display = 'inline-block';
+                } else {
+                    currentGuess = '';
+                    currentRow++;
+                    if (currentRow >= maxGuesses) {
+                        message.textContent = `Game Over. The word was ${targetWord}.`;
+                        gameOver = true;
+                        gameNextBtn.style.display = 'inline-block';
+                    } else {
+                        message.textContent = '';
+                    }
+                }
+            }
+
+            // --- Typing Effect for Letter ---
+            const letterText = `
+                <p>Hey genius,</p>
+                <p>Your koffee this side, so abhi tak toh dekh liya hoga website. I know acchi toh nahi hai, I am giving you 10 Dec… so so I want to say something…</p>
+                <p>I remember everything — the day first we met, the day we drank coffee, the day we danced, the day we talked. I got a crush on you that Ethnic night. Tab nahi bol paya tha, but you looked nice, really… Bas photo nahi li humne ek sath… but I liked you that time. Bata nahi paya tha…</p>
+                <p>But but I know yaar, you are a very very nice girl I ever met. You are really hardworking… and I love the most those coincidences — like almost sab kuch hi same hota tha whenever we talked… like songs and all… it's wow…</p>
+                <p>Sometimes when you called me we are twin, lagta tha you are calling me brother 😭 … why you call me bro? I love you pagle…</p>
+                <p>Aur haan, I don't know whenever I say I love you, like itni baar hi bol deta hoon. Kabhi kabhi lagta hai you think I am weird… yes I am… but genius… you said na you trust me — I am never ever going to break that trust. Kuch bhi ho, never ever…</p>
+                <p>If I say I love you — that really means I loveeeeee you, really really love you most most from my heart. Genius, I love you really…</p>
+                <p>You know when I proposed you that night, neend bhi nahi aayi thi… and even I am thinking about you at night or even everyday… pata nahi tha love is like this kya… it looks like this kya… but genius, ab pyaar ho gaya hai and I am not going to break…</p>
+                <p>I don't know you love me or not, but I love you most, I love you most genius… You are really nice, you know, you are best ever genius…</p>
+                <p>You forced me to go to hackathon and that hackathon changed my life — big thing, you came in my life… and not just this… like you said mummy ki baat mano and study is your first priority… yes study is, I am also same thinking…</p>
+                <p>Genius, I love you, I love you, I love you… And yes you are not distracting me, you are the one who forces me to do new things… With you I learned to smile, with you I learned everything… I miss you sometimes, I miss your energy… I love you…</p>
+                <p>But but genius, trust me — whenever you feel low or whenever anything goes wrong, you don't know what to do… trust me I am here for you always… Just call me, message me — I am here for you always… I know you will definitely achieve everything you want to do… and haan, main tere sath hoon, kuch bhi ho, I am with you always…</p>
+                <p>I want to be your partner who supports you, who is ready with you in your low time and loves you the most… because genius, love isn't just holding hands — it's holding hearts… and I am here to love every version of you…</p>
+                <p>But remember — parents first… and remember also, you are in my heart and you shall be there forever…</p>
+                <p>And one thing — always you said hmm you look nice, I don't know kaha se accha lagta hoon main… but you are the pretty girl and I always wanted to say—</p>
+                <p><i>If you like your coffee hot,<br>Let me be your coffee pot,<br>I wanna be yours, I wanna be yours,<br>Wanna be yours…</i></p>
+                <p>I love you, Avnie… will you be my girlfriend?</p>
+                <p>With all my heart,<br>Koffee</p>
+            `;
+
+            const letterContainer = document.getElementById('letter-text-container');
+            const letterNextBtn = document.getElementById('letter-next-btn');
+            let typingTimer;
+
+            function startTypingEffect() {
+                let charIndex = 0;
+                letterContainer.innerHTML = ''; // Clear previous content
+                letterNextBtn.style.display = 'none'; // Hide button initially
+
+                function typeChar() {
+                    if (charIndex < letterText.length) {
+                        letterContainer.innerHTML = letterText.substring(0, charIndex + 1) + '<span class="typing-cursor"></span>';
+                        charIndex++;
+                        typingTimer = setTimeout(typeChar, 30); // Adjust typing speed here
+                    } else {
+                        // Typing is finished, remove cursor and show button
+                        letterContainer.innerHTML = letterText;
+                        clearTimeout(typingTimer);
+                        letterNextBtn.style.display = 'inline-block';
+                    }
+                }
+                typeChar();
+            }
+
+            // Start typing effect when the letter page is shown
+            const letterPage = document.getElementById('page-letter');
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        if (letterPage.classList.contains('active')) {
+                            startTypingEffect();
+                        }
+                    }
+                });
+            });
+            observer.observe(letterPage, { attributes: true });
+        });
+    </script>
+</body>
+</html>
